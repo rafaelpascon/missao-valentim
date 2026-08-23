@@ -157,10 +157,14 @@ body{
 .card-feedback.good{color:var(--crew-green);}
 .card-feedback.bad{color:var(--crew-red);}
 
+/* crewmate visual — troque a imagem em assets/crewmates/<cor>.png pra usar arte própria.
+   Enquanto o arquivo não existir, cai automaticamente na bolinha colorida atual. */
+.crew-visual{position:relative; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; overflow:hidden; flex:0 0 auto;}
+.crew-visual img{width:100%; height:100%; object-fit:cover; display:block;}
+
 /* crew select */
 .crew-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:10px;}
 .crew-option{background:transparent; border:2px solid transparent; border-radius:12px; padding:8px 4px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;}
-.crew-option .swatch{width:34px;height:34px;border-radius:50%;}
 .crew-option span{font-size:11px; color:var(--muted); font-weight:700;}
 .crew-option.selected{border-color:var(--crew-cyan); background:rgba(63,224,208,.08);}
 .crew-option.selected span{color:var(--crew-cyan);}
@@ -187,7 +191,6 @@ body{
 .confirmed-summary .big{font-family:var(--font-display); font-size:30px; color:var(--crew-yellow); font-weight:700;}
 .confirmed-list{display:flex; flex-direction:column; gap:10px;}
 .crew-chip{display:flex; align-items:center; gap:12px; background:var(--space-navy); border:1px solid var(--panel-light); border-radius:12px; padding:10px 14px;}
-.crew-chip .dot{width:18px;height:18px;border-radius:50%; flex:0 0 18px;}
 .crew-chip .name{font-weight:800; font-size:14.5px;}
 .crew-chip .meta{color:var(--muted); font-size:12.5px;}
 .empty-note{color:var(--muted); font-size:14px; font-style:italic;}
@@ -201,11 +204,35 @@ body{
 .alert-overlay small{margin-top:20px; opacity:.85;}
 @keyframes flash{0%,100%{background:rgba(226,58,58,.94);}50%{background:rgba(150,20,20,.94);}}
 
+/* music */
+.music-btn{position:fixed; bottom:18px; left:18px; z-index:50; width:56px;height:56px;border-radius:50%; background:var(--panel); border:3px solid var(--panel-light); font-size:22px; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.4); color:var(--star-white); display:flex; align-items:center; justify-content:center;}
+.music-btn.playing{border-color:var(--crew-green); animation:musicPulse 1.6s ease-in-out infinite;}
+@keyframes musicPulse{
+  0%,100%{box-shadow:0 6px 18px rgba(0,0,0,.4), 0 0 0 0 rgba(110,231,160,.5);}
+  50%{box-shadow:0 6px 18px rgba(0,0,0,.4), 0 0 0 10px rgba(110,231,160,0);}
+}
+
+/* celebration screen after RSVP */
+.celebration-overlay{position:fixed; inset:0; z-index:90; background:rgba(11,15,31,.92); display:none; align-items:center; justify-content:center; overflow:hidden;}
+.celebration-overlay.show{display:flex;}
+.celebration-field{position:absolute; inset:0; overflow:hidden; pointer-events:none;}
+.celebration-crew{position:absolute; bottom:-80px; animation-name:floatUp; animation-timing-function:ease-in; animation-fill-mode:forwards;}
+@keyframes floatUp{
+  0%{transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+  10%{opacity:1;}
+  100%{transform:translateY(-110vh) translateX(var(--drift,20px)) rotate(var(--spin,8deg)); opacity:0;}
+}
+.celebration-msg{position:relative; z-index:2; text-align:center; background:var(--panel); border:1px solid var(--panel-light); border-radius:18px; padding:32px 26px; max-width:340px; box-shadow:0 12px 40px rgba(0,0,0,.5);}
+.celebration-title{font-family:var(--font-display); font-size:24px; font-weight:800; margin-bottom:8px;}
+.celebration-sub{color:var(--muted); font-size:14px; margin-bottom:20px;}
+.celebration-close{padding:12px 26px; border:none; border-radius:12px; background:var(--crew-green); color:#06331f; font-family:var(--font-display); font-weight:700; font-size:15px; cursor:pointer;}
+
 footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:34px;}
 
 @media (prefers-reduced-motion: reduce){
   .star, .astro{animation:none !important;}
   .alert-overlay.show{animation:none;}
+  .celebration-crew, .music-btn.playing{animation:none !important;}
 }
 </style>
 </head>
@@ -356,6 +383,24 @@ footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:34px;
   <p id="alertMsg"></p>
   <small>toque em qualquer lugar pra voltar à nave</small>
 </div>
+
+<div class="celebration-overlay" id="celebrationOverlay">
+  <div class="celebration-field" id="celebrationField"></div>
+  <div class="celebration-msg">
+    <div class="celebration-title">🎉 Tripulante embarcado!</div>
+    <div class="celebration-sub" id="celebrationSub">Nos vemos na missão, capitão(ã)!</div>
+    <button type="button" class="celebration-close" id="celebrationClose">Continuar</button>
+  </div>
+</div>
+
+<!-- Música da missão: troque assets/music/theme.mp3 pela trilha que quiser
+     (ex: tema do Among Us). Basta colocar o arquivo com esse nome exato
+     na pasta assets/music/ que ele passa a tocar automaticamente. -->
+<audio id="bgMusic" loop preload="none">
+  <source src="assets/music/theme.mp3" type="audio/mpeg">
+  <source src="assets/music/theme.wav" type="audio/wav">
+</audio>
+<button class="music-btn" id="musicBtn" title="Tocar música da missão">🎵</button>
 
 <script>
 // ---------- stars background ----------
@@ -658,20 +703,38 @@ function resetCard(){ setTimeout(()=>{ cardChip.style.left='6px'; }, 500); }
 
 // ---------- crew color select ----------
 const crewColors = [
-  {name:'Vermelho', c:'var(--crew-red)'},
-  {name:'Ciano', c:'var(--crew-cyan)'},
-  {name:'Amarelo', c:'var(--crew-yellow)'},
-  {name:'Verde', c:'var(--crew-green)'},
-  {name:'Roxo', c:'var(--crew-purple)'},
-  {name:'Laranja', c:'var(--crew-orange)'}
+  {key:'red', name:'Vermelho', c:'var(--crew-red)'},
+  {key:'cyan', name:'Ciano', c:'var(--crew-cyan)'},
+  {key:'yellow', name:'Amarelo', c:'var(--crew-yellow)'},
+  {key:'green', name:'Verde', c:'var(--crew-green)'},
+  {key:'purple', name:'Roxo', c:'var(--crew-purple)'},
+  {key:'orange', name:'Laranja', c:'var(--crew-orange)'}
 ];
+
+// ---------- crewmate visual helper (troque as imagens em assets/crewmates/) ----------
+// Cada cor tem um arquivo próprio: assets/crewmates/red.png, cyan.png, yellow.png,
+// green.png, purple.png, orange.png. Basta colocar o PNG (fundo transparente) com o
+// nome certo na pasta que a imagem passa a valer em todo o site — picker de cor,
+// lista de confirmados e tela de celebração. Sem o arquivo, cai na bolinha colorida.
+function crewKeyFromVar(v){
+  if(!v) return 'cyan';
+  const m = /--crew-([a-z]+)/.exec(v);
+  return m ? m[1] : 'cyan';
+}
+function crewVisualHtml(colorVar, size){
+  const key = crewKeyFromVar(colorVar);
+  return `<span class="crew-visual" style="width:${size}px;height:${size}px;background:${colorVar}">`
+    + `<img src="assets/crewmates/${key}.png" alt="" onerror="this.style.display='none'">`
+    + `</span>`;
+}
+
 let selectedColor = crewColors[0];
 const crewGrid = document.getElementById('crewGrid');
 crewColors.forEach((cc, i)=>{
   const btn = document.createElement('button');
   btn.type='button';
   btn.className='crew-option'+(i===0?' selected':'');
-  btn.innerHTML = `<div class="swatch" style="background:${cc.c}"></div><span>${cc.name}</span>`;
+  btn.innerHTML = `${crewVisualHtml(cc.c, 34)}<span>${cc.name}</span>`;
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.crew-option').forEach(el=>el.classList.remove('selected'));
     btn.classList.add('selected');
@@ -744,7 +807,7 @@ function renderConfirmed(list){
   listEl.innerHTML = list.slice().reverse().map(r=>{
     const days = (r.days && r.days.length) ? r.days.join(', ') : 'dias a confirmar';
     return `<div class="crew-chip">
-      <div class="dot" style="background:${r.color || 'var(--crew-cyan)'}"></div>
+      ${crewVisualHtml(r.color || 'var(--crew-cyan)', 34)}
       <div>
         <div class="name">${escapeHtml(r.name)} ${r.people>1 ? '('+r.people+' pessoas)' : ''}</div>
         <div class="meta">${days}</div>
@@ -776,10 +839,66 @@ document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
   flash.style.display = 'block';
   setTimeout(()=>{ flash.style.display = 'none'; }, 3500);
 
+  document.getElementById('celebrationSub').textContent =
+    `Presença de ${name} confirmada — nos vemos na missão, capitão(ã)!`;
+  launchCelebration();
+
   e.target.reset();
   document.getElementById('fPeople').value = 1;
   selectedDays.clear();
   document.querySelectorAll('.day-chip').forEach(c=>c.classList.remove('on'));
+});
+
+// ---------- celebration screen (tripulantes flutuando após confirmar) ----------
+let celebrationTimer = null;
+function launchCelebration(){
+  const field = document.getElementById('celebrationField');
+  const overlay = document.getElementById('celebrationOverlay');
+  field.innerHTML = '';
+  const count = 16;
+  for(let i=0;i<count;i++){
+    const cc = crewColors[Math.floor(Math.random()*crewColors.length)];
+    const size = 40 + Math.random()*30;
+    const left = Math.random()*94;
+    const duration = 4 + Math.random()*3;
+    const delay = Math.random()*1.6;
+    const drift = Math.round(Math.random()*160-80)+'px';
+    const spin = Math.round(Math.random()*40-20)+'deg';
+
+    const el = document.createElement('div');
+    el.className = 'celebration-crew';
+    el.style.left = left+'%';
+    el.style.setProperty('--drift', drift);
+    el.style.setProperty('--spin', spin);
+    el.style.animationDuration = duration+'s';
+    el.style.animationDelay = delay+'s';
+    el.innerHTML = crewVisualHtml(cc.c, size);
+    field.appendChild(el);
+  }
+  overlay.classList.add('show');
+  clearTimeout(celebrationTimer);
+  celebrationTimer = setTimeout(()=> overlay.classList.remove('show'), 6000);
+}
+document.getElementById('celebrationClose').addEventListener('click', ()=>{
+  clearTimeout(celebrationTimer);
+  document.getElementById('celebrationOverlay').classList.remove('show');
+});
+
+// ---------- background music ----------
+const bgMusic = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicBtn');
+musicBtn.addEventListener('click', ()=>{
+  if(bgMusic.paused){
+    bgMusic.volume = 0.5;
+    bgMusic.play().then(()=>{
+      musicBtn.textContent = '🔊';
+      musicBtn.classList.add('playing');
+    }).catch(()=>{ console.warn('Não consegui tocar a música — verifique o arquivo em assets/music/.'); });
+  } else {
+    bgMusic.pause();
+    musicBtn.textContent = '🎵';
+    musicBtn.classList.remove('playing');
+  }
 });
 
 // ---------- emergency meeting easter egg ----------
