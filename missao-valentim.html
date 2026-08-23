@@ -63,33 +63,34 @@ body{
 .eyebrow{font-family:var(--font-display); font-size:14px; letter-spacing:3px; color:var(--crew-cyan); text-transform:uppercase; margin-bottom:10px;}
 .title{font-family:var(--font-display); font-weight:800; font-size:clamp(34px,8vw,56px); line-height:1.05; margin:0 0 6px; color:var(--star-white); text-shadow:0 0 24px rgba(63,224,208,.25);}
 .title span{color:var(--crew-yellow);}
+.title-img{max-width:560px; width:92%; height:auto; margin:0 auto 6px; display:block;}
 .subtitle{font-family:var(--font-body); font-weight:700; color:var(--muted); font-size:16px; margin-bottom:28px;}
 
-.astro-scene{height:120px; position:relative; margin:0 auto 20px; max-width:340px;}
+.astro-scene{height:220px; position:relative; margin:0 auto 20px; max-width:460px;}
 .astro-anim{position:absolute; bottom:0; animation:walk 6s linear infinite;}
 /* Personagem customizado: se assets/crewmate.png existir, ele é usado.
    Se não existir (404), o astronauta em CSS abaixo aparece automaticamente. */
-.astro-img{width:64px; height:auto; display:block;}
-.astro{width:48px;}
-.astro .antenna{position:absolute; top:-14px; left:16px; width:3px; height:12px; background:#5b6280; border-radius:2px;}
-.astro .antenna::after{content:''; position:absolute; top:-5px; left:-2px; width:7px; height:7px; border-radius:50%; background:var(--crew-yellow);}
+.astro-img{width:140px; height:auto; display:block;}
+.astro{width:140px;}
+.astro .antenna{position:absolute; top:-41px; left:47px; width:9px; height:35px; background:#5b6280; border-radius:2px;}
+.astro .antenna::after{content:''; position:absolute; top:-15px; left:-6px; width:20px; height:20px; border-radius:50%; background:var(--crew-yellow);}
 .astro .bean{
-  width:34px; height:46px; border-radius:50% 50% 45% 45% / 62% 62% 38% 38%;
+  width:99px; height:134px; border-radius:50% 50% 45% 45% / 62% 62% 38% 38%;
   background:var(--c); position:relative; margin:0 auto;
-  box-shadow:inset -7px -7px 0 rgba(0,0,0,.16), inset 4px 4px 0 rgba(255,255,255,.08);
+  box-shadow:inset -20px -20px 0 rgba(0,0,0,.16), inset 12px 12px 0 rgba(255,255,255,.08);
 }
 .astro .visor{
-  position:absolute; top:8px; left:6px; width:24px; height:16px; border-radius:50%;
+  position:absolute; top:23px; left:18px; width:70px; height:47px; border-radius:50%;
   background:linear-gradient(135deg,#eafcff,#bfe9ff); transform:rotate(-6deg);
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.6), 2px 2px 4px rgba(0,0,0,.15);
+  box-shadow:inset 0 0 0 6px rgba(255,255,255,.6), 6px 6px 12px rgba(0,0,0,.15);
 }
-.astro .backpack{position:absolute; top:14px; left:-6px; width:8px; height:20px; border-radius:4px 2px 2px 4px; background:var(--c); filter:brightness(.78);}
-.astro .boot{position:absolute; bottom:-6px; width:12px; height:9px; border-radius:2px 2px 6px 6px; background:#2b2f4a;}
-.astro .boot.l{left:1px;} .astro .boot.r{right:1px;}
+.astro .backpack{position:absolute; top:41px; left:-18px; width:23px; height:58px; border-radius:4px 2px 2px 4px; background:var(--c); filter:brightness(.78);}
+.astro .boot{position:absolute; bottom:-18px; width:35px; height:26px; border-radius:2px 2px 6px 6px; background:#2b2f4a;}
+.astro .boot.l{left:3px;} .astro .boot.r{right:3px;}
 @keyframes walk{
   0%{left:0; transform:scaleX(1);}
-  45%{left:calc(100% - 64px); transform:scaleX(1);}
-  50%{left:calc(100% - 64px); transform:scaleX(-1);}
+  45%{left:calc(100% - 140px); transform:scaleX(1);}
+  50%{left:calc(100% - 140px); transform:scaleX(-1);}
   95%{left:0; transform:scaleX(-1);}
   100%{left:0; transform:scaleX(1);}
 }
@@ -244,7 +245,12 @@ footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:34px;
 
   <div class="hero">
     <div class="eyebrow">Comunicado da tripulação</div>
-    <h1 class="title">Missão: 6 anos<br>do <span>Valentim</span></h1>
+    <!-- Título em imagem: troque assets/title.png pela arte da sua esposa.
+         PNG com fundo transparente, ~1200x480px (proporção ~2.5:1). Se o arquivo
+         não existir, o texto abaixo aparece sozinho no lugar. -->
+    <img src="assets/title.png" alt="Missão: 6 anos do Valentim" class="title-img"
+         onerror="this.style.display='none'; document.getElementById('titleFallback').style.display='block';">
+    <h1 class="title" id="titleFallback" style="display:none;">Missão: 6 anos<br>do <span>Valentim</span></h1>
     <div class="subtitle">Tripulante-chefe Valentim Duarte • acesso liberado a partir de 28/08</div>
 
     <div class="astro-scene">
@@ -885,15 +891,34 @@ document.getElementById('celebrationClose').addEventListener('click', ()=>{
 });
 
 // ---------- background music ----------
+// Navegadores bloqueiam autoplay com som antes de qualquer interação do usuário.
+// Pra chegar o mais perto possível de "automático", a música começa sozinha no
+// primeiro toque/clique/tecla em QUALQUER lugar da página (não precisa ser
+// especificamente no botão 🎵). O botão continua servindo pra tocar/pausar manualmente.
 const bgMusic = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicBtn');
+
+function startMusic(){
+  bgMusic.volume = 0.5;
+  return bgMusic.play().then(()=>{
+    musicBtn.textContent = '🔊';
+    musicBtn.classList.add('playing');
+  });
+}
+
+function tryAutoStartMusic(){
+  if(musicBtn.dataset.userControlled === '1') return;
+  if(!bgMusic.paused) return;
+  startMusic().catch(()=>{ /* ainda sem interação suficiente — tenta de novo no próximo toque */ });
+}
+['pointerdown','keydown'].forEach(evt=>{
+  document.addEventListener(evt, tryAutoStartMusic);
+});
+
 musicBtn.addEventListener('click', ()=>{
+  musicBtn.dataset.userControlled = '1';
   if(bgMusic.paused){
-    bgMusic.volume = 0.5;
-    bgMusic.play().then(()=>{
-      musicBtn.textContent = '🔊';
-      musicBtn.classList.add('playing');
-    }).catch(()=>{ console.warn('Não consegui tocar a música — verifique o arquivo em assets/music/.'); });
+    startMusic().catch(()=>{ console.warn('Não consegui tocar a música — verifique o arquivo em assets/music/.'); });
   } else {
     bgMusic.pause();
     musicBtn.textContent = '🎵';
