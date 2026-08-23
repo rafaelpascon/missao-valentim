@@ -906,16 +906,20 @@ function startMusic(){
   });
 }
 
-function tryAutoStartMusic(){
+function tryAutoStartMusic(e){
+  if(musicBtn.contains(e.target)) return; // o botão cuida do próprio toque, evita conflito
   if(musicBtn.dataset.userControlled === '1') return;
   if(!bgMusic.paused) return;
   startMusic().catch(()=>{ /* ainda sem interação suficiente — tenta de novo no próximo toque */ });
 }
-['pointerdown','keydown'].forEach(evt=>{
+// "click" (não "pointerdown") é o evento que o Safari/iOS reconhece como
+// interação válida pra liberar áudio com som — pointerdown é ignorado lá.
+['click','keydown'].forEach(evt=>{
   document.addEventListener(evt, tryAutoStartMusic);
 });
 
-musicBtn.addEventListener('click', ()=>{
+musicBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
   musicBtn.dataset.userControlled = '1';
   if(bgMusic.paused){
     startMusic().catch(()=>{ console.warn('Não consegui tocar a música — verifique o arquivo em assets/music/.'); });
