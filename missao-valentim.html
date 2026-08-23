@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missão: 6 Anos do Valentim</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+/* ===== IDENTIDADE VISUAL PERSONALIZADA =====
+   Se sua esposa criar fontes/artes próprias, basta colocar os arquivos
+   nos caminhos abaixo (mesma pasta do .html) que o site troca sozinho.
+   Se os arquivos não existirem ainda, o site usa Baloo 2 / Nunito normalmente. */
+@font-face{
+  font-family:'PartyDisplay';
+  src:url('assets/fonts/display.woff2') format('woff2');
+  font-weight:400 800;
+  font-display:swap;
+}
+@font-face{
+  font-family:'PartyBody';
+  src:url('assets/fonts/body.woff2') format('woff2');
+  font-weight:400 800;
+  font-display:swap;
+}
+
+:root{
+  --space-black:#0B0F1F;
+  --space-navy:#141B34;
+  --panel:#1B2444;
+  --panel-light:#242F5C;
+  --crew-red:#E23A3A;
+  --crew-cyan:#3FE0D0;
+  --crew-yellow:#FFD23F;
+  --crew-green:#6EE7A0;
+  --crew-purple:#B26EFB;
+  --crew-orange:#FF9C43;
+  --star-white:#F4F6FB;
+  --muted:#8892B0;
+  --font-display:'PartyDisplay','Baloo 2', sans-serif;
+  --font-body:'PartyBody','Nunito', sans-serif;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--space-black);
+  color:var(--star-white);
+  font-family:var(--font-body);
+  overflow-x:hidden;
+  position:relative;
+  min-height:100vh;
+}
+
+.stars{position:fixed; inset:0; z-index:0; pointer-events:none;}
+.star{position:absolute; background:#fff; border-radius:50%; animation:twinkle 3s ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:.25;} 50%{opacity:1;}}
+
+.page{position:relative; z-index:1; max-width:760px; margin:0 auto; padding:0 20px 60px;}
+
+/* ---------- HERO ---------- */
+.hero{text-align:center; padding:56px 0 24px; position:relative;}
+.eyebrow{font-family:var(--font-display); font-size:14px; letter-spacing:3px; color:var(--crew-cyan); text-transform:uppercase; margin-bottom:10px;}
+.title{font-family:var(--font-display); font-weight:800; font-size:clamp(34px,8vw,56px); line-height:1.05; margin:0 0 6px; color:var(--star-white); text-shadow:0 0 24px rgba(63,224,208,.25);}
+.title span{color:var(--crew-yellow);}
+.subtitle{font-family:var(--font-body); font-weight:700; color:var(--muted); font-size:16px; margin-bottom:28px;}
+
+.astro-scene{height:120px; position:relative; margin:0 auto 20px; max-width:340px;}
+.astro-anim{position:absolute; bottom:0; animation:walk 6s linear infinite;}
+/* Personagem customizado: se assets/crewmate.png existir, ele é usado.
+   Se não existir (404), o astronauta em CSS abaixo aparece automaticamente. */
+.astro-img{width:64px; height:auto; display:block;}
+.astro{width:48px;}
+.astro .antenna{position:absolute; top:-14px; left:16px; width:3px; height:12px; background:#5b6280; border-radius:2px;}
+.astro .antenna::after{content:''; position:absolute; top:-5px; left:-2px; width:7px; height:7px; border-radius:50%; background:var(--crew-yellow);}
+.astro .bean{
+  width:34px; height:46px; border-radius:50% 50% 45% 45% / 62% 62% 38% 38%;
+  background:var(--c); position:relative; margin:0 auto;
+  box-shadow:inset -7px -7px 0 rgba(0,0,0,.16), inset 4px 4px 0 rgba(255,255,255,.08);
+}
+.astro .visor{
+  position:absolute; top:8px; left:6px; width:24px; height:16px; border-radius:50%;
+  background:linear-gradient(135deg,#eafcff,#bfe9ff); transform:rotate(-6deg);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.6), 2px 2px 4px rgba(0,0,0,.15);
+}
+.astro .backpack{position:absolute; top:14px; left:-6px; width:8px; height:20px; border-radius:4px 2px 2px 4px; background:var(--c); filter:brightness(.78);}
+.astro .boot{position:absolute; bottom:-6px; width:12px; height:9px; border-radius:2px 2px 6px 6px; background:#2b2f4a;}
+.astro .boot.l{left:1px;} .astro .boot.r{right:1px;}
+@keyframes walk{
+  0%{left:0; transform:scaleX(1);}
+  45%{left:calc(100% - 64px); transform:scaleX(1);}
+  50%{left:calc(100% - 64px); transform:scaleX(-1);}
+  95%{left:0; transform:scaleX(-1);}
+  100%{left:0; transform:scaleX(1);}
+}
+
+.countdown{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px;}
+.count-box{background:var(--panel); border:1px solid var(--panel-light); border-radius:12px; padding:10px 14px; min-width:64px;}
+.count-box .num{font-family:var(--font-display); font-size:26px; font-weight:700; color:var(--crew-green); display:block;}
+.count-box .lab{font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--muted);}
+
+/* ---------- PANELS ---------- */
+.panel{background:var(--panel); border:1px solid var(--panel-light); border-radius:18px; padding:26px 22px; margin-top:22px;}
+.panel-title{font-family:var(--font-display); font-weight:700; font-size:22px; margin:0 0 4px; display:flex; align-items:center; gap:10px;}
+.panel-sub{color:var(--muted); font-size:14px; margin-bottom:18px;}
+
+/* task info list */
+.task{display:flex; align-items:center; gap:14px; padding:12px 0; border-top:1px solid rgba(255,255,255,.06);}
+.task:first-of-type{border-top:none;}
+.task-icon{width:40px;height:40px; flex:0 0 40px; border-radius:10px; background:var(--panel-light); display:flex;align-items:center;justify-content:center; font-size:20px;}
+.task-text b{display:block; font-size:15px;}
+.task-text span{color:var(--muted); font-size:13.5px;}
+.task-check{margin-left:auto; width:22px;height:22px;border-radius:5px; border:2px solid var(--crew-green); flex:0 0 22px; display:flex;align-items:center;justify-content:center; color:var(--crew-green); font-size:14px; font-weight:800; opacity:0; transform:scale(.5); transition:opacity .4s ease, transform .4s ease;}
+.task.checked .task-check{opacity:1; transform:scale(1);}
+
+/* progress bar */
+.progress-bar{height:10px; background:var(--space-navy); border-radius:6px; overflow:hidden; margin-bottom:8px; border:1px solid var(--panel-light);}
+.progress-fill{height:100%; width:0%; background:var(--crew-green); transition:width .5s ease;}
+.progress-label{font-size:13px; color:var(--muted); font-weight:700; margin-bottom:18px;}
+.progress-label b{color:var(--crew-green);}
+
+/* mini games */
+.game{background:var(--space-navy); border:1px solid var(--panel-light); border-radius:14px; padding:16px; margin-bottom:16px; transition:opacity .4s, border-color .4s;}
+.game.done{border-color:var(--crew-green);}
+.game-head{display:flex; align-items:center; gap:10px; margin-bottom:4px;}
+.game-icon{font-size:20px;}
+.game-head b{font-family:var(--font-display); font-size:16px; flex:1;}
+.game-status{font-size:12px; font-weight:800; color:var(--muted); background:var(--panel); padding:3px 9px; border-radius:20px;}
+.game.done .game-status{color:var(--crew-green);}
+.game-sub{color:var(--muted); font-size:13px; margin-bottom:12px;}
+
+/* meteor game */
+.meteor-field{position:relative; height:150px; background:var(--space-black); border-radius:10px; overflow:hidden; border:1px solid var(--panel-light);}
+.meteor{position:absolute; top:-30px; font-size:24px; cursor:pointer; user-select:none; transition:top linear; filter:drop-shadow(0 0 4px rgba(255,150,80,.5));}
+
+/* wire game */
+.wire-board{position:relative; height:200px; touch-action:none;}
+.wire-lines{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible;}
+.wire-lines path{filter:drop-shadow(0 2px 2px rgba(0,0,0,.35));}
+.wire-col{position:absolute; top:0; bottom:0; display:flex; flex-direction:column; justify-content:space-between; padding:6px 0; z-index:2;}
+.wire-col.left{left:8px;} .wire-col.right{right:8px;}
+.wire-item{display:flex; flex-direction:column; align-items:center; gap:3px;}
+.wire-node{width:36px; height:36px; border-radius:50%; border:3px solid rgba(255,255,255,.3); cursor:grab; touch-action:none; transition:transform .15s, border-color .15s; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.5);}
+.wire-node.plug-left{cursor:grab;}
+.wire-node.dragging{transform:scale(1.15); border-color:#fff; cursor:grabbing;}
+.wire-node.connected{opacity:.4; cursor:default;}
+.wire-node.target-hover{transform:scale(1.2); border-color:#fff;}
+.wire-node.shake{animation:shake .35s;}
+.wire-label{font-size:10px; color:var(--muted); font-weight:800; letter-spacing:.5px;}
+@keyframes shake{0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);}}
+
+/* card game */
+.card-track{position:relative; height:58px; background:var(--space-black); border-radius:10px; border:1px dashed var(--panel-light); overflow:hidden;}
+.card-slot{position:absolute; right:14px; top:8px; bottom:8px; width:4px; background:var(--panel-light); border-radius:2px;}
+.card-chip{position:absolute; top:9px; left:6px; width:54px; height:40px; border-radius:8px; background:linear-gradient(135deg,#f3f3f3,#cfd6e8); display:flex; align-items:center; justify-content:center; font-size:20px; cursor:grab; touch-action:none; box-shadow:0 3px 6px rgba(0,0,0,.3);}
+.card-feedback{margin-top:10px; font-size:13px; font-weight:800; min-height:18px;}
+.card-feedback.good{color:var(--crew-green);}
+.card-feedback.bad{color:var(--crew-red);}
+
+/* crew select */
+.crew-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:10px;}
+.crew-option{background:transparent; border:2px solid transparent; border-radius:12px; padding:8px 4px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;}
+.crew-option .swatch{width:34px;height:34px;border-radius:50%;}
+.crew-option span{font-size:11px; color:var(--muted); font-weight:700;}
+.crew-option.selected{border-color:var(--crew-cyan); background:rgba(63,224,208,.08);}
+.crew-option.selected span{color:var(--crew-cyan);}
+
+/* rsvp form */
+.form-wrap{position:relative;}
+.field{margin-bottom:16px;}
+.field label{display:block; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:6px;}
+.field input[type=text], .field input[type=number], .field textarea{width:100%; background:var(--space-navy); border:1px solid var(--panel-light); border-radius:10px; color:var(--star-white); padding:11px 12px; font-family:var(--font-body); font-size:15px;}
+.field textarea{resize:vertical; min-height:70px;}
+.days{display:flex; gap:8px; flex-wrap:wrap;}
+.day-chip{background:var(--space-navy); border:1px solid var(--panel-light); border-radius:20px; padding:8px 16px; cursor:pointer; font-weight:700; font-size:13.5px; color:var(--muted);}
+.day-chip.on{background:var(--crew-cyan); color:#04231f; border-color:var(--crew-cyan);}
+.submit-btn{width:100%; padding:15px; border:none; border-radius:12px; background:var(--crew-green); color:#06331f; font-family:var(--font-display); font-weight:700; font-size:17px; letter-spacing:.5px; cursor:pointer; margin-top:6px;}
+.submit-btn:active{transform:scale(.98);}
+.confirm-flash{display:none; text-align:center; font-family:var(--font-display); background:rgba(110,231,160,.12); border:1px solid var(--crew-green); color:var(--crew-green); border-radius:10px; padding:12px; margin-top:14px; font-weight:700; font-size:15px;}
+
+.rsvp-lock{position:absolute; inset:-4px; background:rgba(11,15,31,.82); backdrop-filter:blur(3px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; border-radius:14px; z-index:5; text-align:center; padding:20px; font-weight:800; transition:opacity .6s ease;}
+.rsvp-lock.open{opacity:0; pointer-events:none;}
+.lock-icon{font-size:34px;}
+
+/* confirmed list */
+.confirmed-summary{display:flex; align-items:baseline; gap:8px; margin-bottom:14px;}
+.confirmed-summary .big{font-family:var(--font-display); font-size:30px; color:var(--crew-yellow); font-weight:700;}
+.confirmed-list{display:flex; flex-direction:column; gap:10px;}
+.crew-chip{display:flex; align-items:center; gap:12px; background:var(--space-navy); border:1px solid var(--panel-light); border-radius:12px; padding:10px 14px;}
+.crew-chip .dot{width:18px;height:18px;border-radius:50%; flex:0 0 18px;}
+.crew-chip .name{font-weight:800; font-size:14.5px;}
+.crew-chip .meta{color:var(--muted); font-size:12.5px;}
+.empty-note{color:var(--muted); font-size:14px; font-style:italic;}
+
+/* emergency */
+.emergency-btn{position:fixed; bottom:18px; right:18px; z-index:50; width:56px;height:56px;border-radius:50%; background:var(--crew-red); border:3px solid #fff2f2; font-size:24px; cursor:pointer; box-shadow:0 6px 18px rgba(226,58,58,.5);}
+.alert-overlay{position:fixed; inset:0; z-index:100; background:rgba(226,58,58,.94); display:none; align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:30px; cursor:pointer;}
+.alert-overlay.show{display:flex; animation:flash .6s steps(2) 3;}
+.alert-overlay h2{font-family:var(--font-display); font-size:clamp(26px,7vw,40px); margin:0 0 14px;}
+.alert-overlay p{font-size:17px; max-width:420px; font-weight:700;}
+.alert-overlay small{margin-top:20px; opacity:.85;}
+@keyframes flash{0%,100%{background:rgba(226,58,58,.94);}50%{background:rgba(150,20,20,.94);}}
+
+footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:34px;}
+
+@media (prefers-reduced-motion: reduce){
+  .star, .astro{animation:none !important;}
+  .alert-overlay.show{animation:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="eyebrow">Comunicado da tripulação</div>
+    <h1 class="title">Missão: 6 anos<br>do <span>Valentim</span></h1>
+    <div class="subtitle">Tripulante-chefe Valentim Duarte • acesso liberado a partir de 28/08</div>
+
+    <div class="astro-scene">
+      <!-- Personagem: coloque a arte da sua esposa em assets/crewmate.png
+           PNG com fundo transparente, ~500x650px (proporção retrato), pose lateral/de corpo inteiro.
+           Se o arquivo não existir, o astronauta em CSS abaixo aparece sozinho. -->
+      <img src="assets/crewmate.png" alt="Personagem do Valentim" class="astro-anim astro-img"
+           onerror="this.style.display='none'; document.getElementById('astroFallback').style.display='block';">
+      <div class="astro-anim astro" id="astroFallback" style="--c:var(--crew-red); display:none;">
+        <div class="antenna"></div>
+        <div class="bean"><div class="visor"></div></div>
+        <div class="backpack"></div>
+        <div class="boot l"></div>
+        <div class="boot r"></div>
+      </div>
+    </div>
+
+    <div class="countdown" id="countdown"></div>
+  </div>
+
+  <div class="panel">
+    <h2 class="panel-title">📋 Informações da missão</h2>
+    <div class="panel-sub">Leia com atenção antes de embarcar, tripulante.</div>
+
+    <div class="task">
+      <div class="task-icon">📍</div>
+      <div class="task-text"><b>Local</b><span>Recanto Bruna — Itatiba, SP</span></div>
+      <div class="task-check">✓</div>
+    </div>
+    <div class="task">
+      <div class="task-icon">📅</div>
+      <div class="task-text"><b>Data</b><span>28 a 30 de agosto (sexta a domingo) — final de semana inteiro!</span></div>
+      <div class="task-check">✓</div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🎒</div>
+      <div class="task-text"><b>O que levar</b><span>Roupa de banho, protetor solar, troca de roupa pros 3 dias, escovinha de dente e muita energia</span></div>
+      <div class="task-check">✓</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2 class="panel-title">🎮 Complete as tarefas da nave</h2>
+    <div class="panel-sub">O convite só libera depois que as 3 tarefas forem concluídas. Vai, tripulante!</div>
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label"><b id="taskProgress">0/3</b> tarefas concluídas</div>
+
+    <div class="game" data-task="meteors">
+      <div class="game-head"><span class="game-icon">☄️</span><b>Destruir meteoros</b><span class="game-status" id="statusMeteor">0/6</span></div>
+      <div class="game-sub">Toque nos meteoros antes que eles cruzem a nave.</div>
+      <div class="meteor-field" id="meteorField"></div>
+    </div>
+
+    <div class="game" data-task="wires">
+      <div class="game-head"><span class="game-icon">🔌</span><b>Ligar os fios</b><span class="game-status" id="statusWire">0/4</span></div>
+      <div class="game-sub">Arraste o fio da esquerda até o conector com o mesmo símbolo e letra à direita.</div>
+      <div class="wire-board" id="wireBoard">
+        <svg class="wire-lines" id="wireLines"></svg>
+        <div class="wire-col left" id="wireLeft"></div>
+        <div class="wire-col right" id="wireRight"></div>
+      </div>
+    </div>
+
+    <div class="game" data-task="card">
+      <div class="game-head"><span class="game-icon">💳</span><b>Passar o cartão</b><span class="game-status" id="statusCard">Aguardando</span></div>
+      <div class="game-sub">Arraste o cartão até o fim, sem ser rápido nem devagar demais.</div>
+      <div class="card-track" id="cardTrack">
+        <div class="card-slot"></div>
+        <div class="card-chip" id="cardChip">💳</div>
+      </div>
+      <div class="card-feedback" id="cardFeedback"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2 class="panel-title">🧑‍🚀 Escolha sua cor de tripulante</h2>
+    <div class="panel-sub">Isso vai aparecer do lado do seu nome na confirmação.</div>
+    <div class="crew-grid" id="crewGrid"></div>
+  </div>
+
+  <div class="panel" id="rsvpPanel">
+    <h2 class="panel-title">🚀 Confirmar missão (RSVP)</h2>
+    <div class="panel-sub">Última etapa antes de embarcar.</div>
+
+    <div class="form-wrap">
+      <form id="rsvpForm" style="filter:blur(4px); pointer-events:none; transition:filter .5s;">
+        <div class="field">
+          <label for="fName">Seu nome</label>
+          <input type="text" id="fName" required placeholder="Ex: Ana e família">
+        </div>
+        <div class="field">
+          <label for="fPeople">Quantas pessoas</label>
+          <input type="number" id="fPeople" min="1" value="1" required>
+        </div>
+        <div class="field">
+          <label>Quais dias vão estar lá</label>
+          <div class="days">
+            <div class="day-chip" data-day="Sex">Sexta 28/08</div>
+            <div class="day-chip" data-day="Sáb">Sábado 29/08</div>
+            <div class="day-chip" data-day="Dom">Domingo 30/08</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="fMsg">Recado pro Valentim (opcional)</label>
+          <textarea id="fMsg" placeholder="Deixe um recado de aniversário..."></textarea>
+        </div>
+        <button type="submit" class="submit-btn">EMBARCAR NA MISSÃO 🚀</button>
+        <div class="confirm-flash" id="confirmFlash">✅ TAREFA CONCLUÍDA — presença confirmada!</div>
+      </form>
+
+      <div class="rsvp-lock" id="rsvpLock">
+        <div class="lock-icon">🔒</div>
+        <div>Complete as 3 tarefas acima<br>pra liberar o convite</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2 class="panel-title">👥 Tripulação confirmada</h2>
+    <div class="confirmed-summary">
+      <span class="big" id="totalPeople">0</span>
+      <span>pessoas confirmadas até agora</span>
+    </div>
+    <div class="confirmed-list" id="confirmedList">
+      <div class="empty-note">Nenhum tripulante confirmado ainda — seja o primeiro!</div>
+    </div>
+  </div>
+
+  <footer>feita com 💙 pra celebrar o Valentim • toque no botão vermelho por sua conta e risco</footer>
+</div>
+
+<button class="emergency-btn" id="emergencyBtn" title="Reunião de emergência">🚨</button>
+<div class="alert-overlay" id="alertOverlay">
+  <h2>🚨 REUNIÃO DE EMERGÊNCIA 🚨</h2>
+  <p id="alertMsg"></p>
+  <small>toque em qualquer lugar pra voltar à nave</small>
+</div>
+
+<script>
+// ---------- stars background ----------
+const starsEl = document.getElementById('stars');
+const starCount = window.innerWidth < 500 ? 60 : 110;
+for(let i=0;i<starCount;i++){
+  const s = document.createElement('div');
+  s.className='star';
+  const size = Math.random()*2 + 1;
+  s.style.width = size+'px';
+  s.style.height = size+'px';
+  s.style.left = Math.random()*100+'%';
+  s.style.top = Math.random()*100+'%';
+  s.style.animationDelay = (Math.random()*3)+'s';
+  starsEl.appendChild(s);
+}
+
+// ---------- info task checklist reveal ----------
+const infoTasks = document.querySelectorAll('.task');
+const obs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('checked'); } });
+},{threshold:.5});
+infoTasks.forEach(t=>obs.observe(t));
+
+// ---------- countdown ----------
+const target = new Date('2026-08-28T14:00:00-03:00').getTime();
+const countdownEl = document.getElementById('countdown');
+function renderCountdown(){
+  const now = Date.now();
+  const diff = target - now;
+  let d=0,h=0,m=0,s=0;
+  if(diff > 0){
+    d = Math.floor(diff/(1000*60*60*24));
+    h = Math.floor((diff/(1000*60*60))%24);
+    m = Math.floor((diff/(1000*60))%60);
+    s = Math.floor((diff/1000)%60);
+  }
+  countdownEl.innerHTML = `
+    <div class="count-box"><span class="num">${d}</span><span class="lab">dias</span></div>
+    <div class="count-box"><span class="num">${h}</span><span class="lab">horas</span></div>
+    <div class="count-box"><span class="num">${m}</span><span class="lab">min</span></div>
+    <div class="count-box"><span class="num">${s}</span><span class="lab">seg</span></div>
+  `;
+}
+renderCountdown();
+setInterval(renderCountdown, 1000);
+
+// ================= TASK GATE =================
+const taskDone = {meteors:false, wires:false, card:false};
+function taskCompleted(key){
+  if(taskDone[key]) return;
+  taskDone[key]=true;
+  const el = document.querySelector(`.game[data-task="${key}"]`);
+  if(el) el.classList.add('done');
+  updateProgress();
+}
+function updateProgress(){
+  const doneCount = Object.values(taskDone).filter(Boolean).length;
+  document.getElementById('taskProgress').textContent = doneCount+'/3';
+  document.getElementById('progressFill').style.width = (doneCount/3*100)+'%';
+  if(doneCount===3) unlockRSVP();
+}
+function unlockRSVP(){
+  document.getElementById('rsvpLock').classList.add('open');
+  const form = document.getElementById('rsvpForm');
+  form.style.filter='none';
+  form.style.pointerEvents='auto';
+  setTimeout(()=>{
+    document.getElementById('rsvpPanel').scrollIntoView({behavior:'smooth', block:'center'});
+  }, 300);
+}
+
+// ---------- METEOR GAME ----------
+const meteorField = document.getElementById('meteorField');
+const meteorStatus = document.getElementById('statusMeteor');
+const METEOR_TARGET = 6;
+let meteorHits = 0;
+let meteorTimer = null;
+const meteorEmojis = ['☄️','🪨','🌠'];
+
+function spawnMeteor(){
+  if(taskDone.meteors) return;
+  const m = document.createElement('div');
+  m.className='meteor';
+  m.textContent = meteorEmojis[Math.floor(Math.random()*meteorEmojis.length)];
+  const leftPct = 5 + Math.random()*85;
+  m.style.left = leftPct+'%';
+  m.style.top = '-30px';
+  meteorField.appendChild(m);
+
+  const duration = 2600 + Math.random()*1800;
+  requestAnimationFrame(()=>{
+    m.style.transitionDuration = duration+'ms';
+    m.style.top = 'calc(100% - 10px)';
+  });
+
+  const clickHandler = ()=>{
+    if(taskDone.meteors) return;
+    meteorHits = Math.min(meteorHits+1, METEOR_TARGET);
+    meteorStatus.textContent = meteorHits+'/'+METEOR_TARGET;
+    m.remove();
+    if(meteorHits>=METEOR_TARGET){
+      clearInterval(meteorTimer);
+      meteorField.querySelectorAll('.meteor').forEach(x=>x.remove());
+      taskCompleted('meteors');
+    }
+  };
+  m.addEventListener('click', clickHandler);
+  m.addEventListener('touchstart', (e)=>{ e.preventDefault(); clickHandler(); }, {passive:false});
+
+  m.addEventListener('transitionend', ()=>{ if(m.parentNode) m.remove(); });
+}
+meteorTimer = setInterval(spawnMeteor, 850);
+
+// ---------- WIRE GAME: realistic drag-and-drop cable (colorblind-friendly) ----------
+// Okabe-Ito colorblind-safe palette, each paired with a distinct icon and letter
+// so the task never depends on color alone.
+const svgNS = 'http://www.w3.org/2000/svg';
+const wireSet = [
+  {key:'A', color:'#E69F00', icon:'▲'}, // orange + triangle
+  {key:'B', color:'#0072B2', icon:'●'}, // blue + circle
+  {key:'C', color:'#009E73', icon:'■'}, // bluish-green + square
+  {key:'D', color:'#CC79A7', icon:'★'}  // reddish-purple + star
+];
+const leftOrder = [...wireSet];
+const rightOrder = [...wireSet].sort(()=>Math.random()-0.5);
+const wireLeftEl = document.getElementById('wireLeft');
+const wireRightEl = document.getElementById('wireRight');
+const wireLinesEl = document.getElementById('wireLines');
+const wireBoard = document.getElementById('wireBoard');
+const wireStatus = document.getElementById('statusWire');
+let wireConnected = 0;
+
+function makeWireNode(item, side){
+  const wrap = document.createElement('div');
+  wrap.className = 'wire-item';
+  const n = document.createElement('div');
+  n.className = 'wire-node' + (side==='left' ? ' plug-left' : '');
+  n.style.background = item.color;
+  n.dataset.key = item.key;
+  n.dataset.color = item.color;
+  n.dataset.side = side;
+  n.textContent = item.icon;
+  const lab = document.createElement('div');
+  lab.className = 'wire-label';
+  lab.textContent = item.key;
+  wrap.appendChild(n);
+  wrap.appendChild(lab);
+  return wrap;
+}
+leftOrder.forEach(it=> wireLeftEl.appendChild(makeWireNode(it,'left')));
+rightOrder.forEach(it=> wireRightEl.appendChild(makeWireNode(it,'right')));
+
+function nodeCenter(node){
+  const r = node.getBoundingClientRect();
+  const b = wireBoard.getBoundingClientRect();
+  return {x: r.left + r.width/2 - b.left, y: r.top + r.height/2 - b.top};
+}
+function cablePath(p1, p2){
+  // realistic drooping cable using a cubic bezier
+  const sag = Math.min(50, Math.abs(p2.x - p1.x) * 0.25 + 18);
+  return `M ${p1.x} ${p1.y} C ${p1.x+40} ${p1.y+sag}, ${p2.x-40} ${p2.y+sag}, ${p2.x} ${p2.y}`;
+}
+
+let dragNode = null, dragPath = null, dragPlug = null, dragStart = null;
+
+wireLeftEl.addEventListener('pointerdown', (e)=>{
+  if(taskDone.wires) return;
+  const node = e.target.closest('.wire-node');
+  if(!node || node.classList.contains('connected')) return;
+  dragNode = node;
+  node.setPointerCapture(e.pointerId);
+  node.classList.add('dragging');
+  dragStart = nodeCenter(node);
+
+  dragPath = document.createElementNS(svgNS,'path');
+  dragPath.setAttribute('stroke', node.dataset.color);
+  dragPath.setAttribute('stroke-width','6');
+  dragPath.setAttribute('fill','none');
+  dragPath.setAttribute('stroke-linecap','round');
+  dragPath.setAttribute('opacity','0.9');
+  wireLinesEl.appendChild(dragPath);
+
+  dragPlug = document.createElementNS(svgNS,'circle');
+  dragPlug.setAttribute('r','9');
+  dragPlug.setAttribute('fill', node.dataset.color);
+  dragPlug.setAttribute('stroke', '#0B0F1F');
+  dragPlug.setAttribute('stroke-width','2');
+  wireLinesEl.appendChild(dragPlug);
+
+  updateDrag(dragStart);
+});
+
+function updateDrag(pt){
+  dragPath.setAttribute('d', cablePath(dragStart, pt));
+  dragPlug.setAttribute('cx', pt.x);
+  dragPlug.setAttribute('cy', pt.y);
+}
+
+function findTarget(clientX, clientY){
+  const candidates = wireRightEl.querySelectorAll('.wire-node:not(.connected)');
+  let found = null;
+  candidates.forEach(rn=>{
+    const r = rn.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    if(Math.hypot(clientX-cx, clientY-cy) < 26) found = rn;
+  });
+  return found;
+}
+
+wireLeftEl.addEventListener('pointermove', (e)=>{
+  if(!dragNode) return;
+  const b = wireBoard.getBoundingClientRect();
+  updateDrag({x: e.clientX - b.left, y: e.clientY - b.top});
+  wireRightEl.querySelectorAll('.wire-node').forEach(n=>n.classList.remove('target-hover'));
+  const t = findTarget(e.clientX, e.clientY);
+  if(t) t.classList.add('target-hover');
+});
+
+function endDrag(e){
+  if(!dragNode) return;
+  wireRightEl.querySelectorAll('.wire-node').forEach(n=>n.classList.remove('target-hover'));
+  const target = findTarget(e.clientX, e.clientY);
+
+  if(target && target.dataset.key === dragNode.dataset.key){
+    const p1 = nodeCenter(dragNode), p2 = nodeCenter(target);
+    dragPath.setAttribute('d', cablePath(p1,p2));
+    dragPath.removeAttribute('opacity');
+    dragPlug.remove();
+    dragNode.classList.add('connected'); dragNode.classList.remove('dragging');
+    target.classList.add('connected');
+    wireConnected++;
+    wireStatus.textContent = wireConnected+'/'+wireSet.length;
+    if(wireConnected>=wireSet.length) taskCompleted('wires');
+  } else {
+    if(target){ target.classList.add('shake'); setTimeout(()=>target.classList.remove('shake'),350); }
+    dragNode.classList.remove('dragging');
+    dragPath.style.transition = 'opacity .25s';
+    dragPath.style.opacity = '0';
+    dragPlug.style.transition = 'opacity .25s';
+    dragPlug.style.opacity = '0';
+    setTimeout(()=>{ dragPath && dragPath.remove(); dragPlug && dragPlug.remove(); }, 250);
+  }
+  dragNode = null; dragPath = null; dragPlug = null; dragStart = null;
+}
+wireLeftEl.addEventListener('pointerup', endDrag);
+wireLeftEl.addEventListener('pointercancel', endDrag);
+
+// ---------- CARD GAME ----------
+const cardChip = document.getElementById('cardChip');
+const cardTrack = document.getElementById('cardTrack');
+const cardFeedback = document.getElementById('cardFeedback');
+let cardDragging = false, cardStartTime = 0, cardTravel = 0;
+
+cardChip.addEventListener('pointerdown', (e)=>{
+  if(taskDone.card) return;
+  cardDragging = true;
+  cardStartTime = performance.now();
+  cardChip.setPointerCapture(e.pointerId);
+  cardChip.style.cursor='grabbing';
+  cardTravel = cardTrack.clientWidth - cardChip.offsetWidth - 12;
+});
+cardChip.addEventListener('pointermove', (e)=>{
+  if(!cardDragging) return;
+  const trackRect = cardTrack.getBoundingClientRect();
+  let x = e.clientX - trackRect.left - cardChip.offsetWidth/2;
+  x = Math.max(6, Math.min(x, cardTravel+6));
+  cardChip.style.left = x+'px';
+});
+function endCardDrag(){
+  if(!cardDragging) return;
+  cardDragging = false;
+  cardChip.style.cursor='grab';
+  const currentLeft = parseFloat(cardChip.style.left||'6');
+  const progress = (currentLeft - 6) / cardTravel;
+  const elapsed = performance.now() - cardStartTime;
+
+  if(progress < 0.85){
+    cardFeedback.textContent = 'O cartão não passou até o fim — tenta de novo!';
+    cardFeedback.className = 'card-feedback bad';
+    resetCard();
+  } else if(elapsed < 220){
+    cardFeedback.textContent = 'Rápido demais! Passa um pouco mais devagar.';
+    cardFeedback.className = 'card-feedback bad';
+    resetCard();
+  } else if(elapsed > 2200){
+    cardFeedback.textContent = 'Devagar demais! Passa um pouco mais rápido.';
+    cardFeedback.className = 'card-feedback bad';
+    resetCard();
+  } else {
+    cardFeedback.textContent = 'Cartão aceito! ✅';
+    cardFeedback.className = 'card-feedback good';
+    document.getElementById('statusCard').textContent = 'Concluído';
+    taskCompleted('card');
+  }
+}
+cardChip.addEventListener('pointerup', endCardDrag);
+cardChip.addEventListener('pointercancel', endCardDrag);
+function resetCard(){ setTimeout(()=>{ cardChip.style.left='6px'; }, 500); }
+
+// ---------- crew color select ----------
+const crewColors = [
+  {name:'Vermelho', c:'var(--crew-red)'},
+  {name:'Ciano', c:'var(--crew-cyan)'},
+  {name:'Amarelo', c:'var(--crew-yellow)'},
+  {name:'Verde', c:'var(--crew-green)'},
+  {name:'Roxo', c:'var(--crew-purple)'},
+  {name:'Laranja', c:'var(--crew-orange)'}
+];
+let selectedColor = crewColors[0];
+const crewGrid = document.getElementById('crewGrid');
+crewColors.forEach((cc, i)=>{
+  const btn = document.createElement('button');
+  btn.type='button';
+  btn.className='crew-option'+(i===0?' selected':'');
+  btn.innerHTML = `<div class="swatch" style="background:${cc.c}"></div><span>${cc.name}</span>`;
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.crew-option').forEach(el=>el.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedColor = cc;
+  });
+  crewGrid.appendChild(btn);
+});
+
+// ---------- day chips ----------
+const selectedDays = new Set();
+document.querySelectorAll('.day-chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    chip.classList.toggle('on');
+    const d = chip.dataset.day;
+    if(selectedDays.has(d)) selectedDays.delete(d); else selectedDays.add(d);
+  });
+});
+
+// ---------- RSVP backend: Google Sheets via Apps Script ----------
+// 1. Crie uma Google Sheet com o cabeçalho: Timestamp | Nome | Pessoas | Dias | Mensagem | Cor
+// 2. Extensões > Apps Script, cole o código do arquivo apps-script.gs (fornecido à parte)
+// 3. Implantar > Nova implantação > Web App > executar como "Eu", acesso "Qualquer pessoa"
+// 4. Cole a URL gerada aqui embaixo:
+const RSVP_ENDPOINT = 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT';
+
+let currentList = [];
+
+async function loadRSVPs(){
+  if(!RSVP_ENDPOINT || RSVP_ENDPOINT.startsWith('COLE_AQUI')) return [];
+  try{
+    const res = await fetch(RSVP_ENDPOINT, {cache:'no-store'});
+    const rows = await res.json();
+    return rows.map(r=>({
+      name: r.Nome || r.name || '',
+      people: r.Pessoas || r.people || 1,
+      days: (r.Dias || r.days || '').toString().split(',').map(s=>s.trim()).filter(Boolean),
+      msg: r.Mensagem || r.msg || '',
+      color: r.Cor || r.color || 'var(--crew-cyan)'
+    }));
+  }catch(e){ console.error('load error', e); return []; }
+}
+
+async function saveRSVP(entry){
+  if(!RSVP_ENDPOINT || RSVP_ENDPOINT.startsWith('COLE_AQUI')){
+    console.warn('RSVP_ENDPOINT não configurado ainda — resposta não foi salva.');
+    return;
+  }
+  try{
+    // Content-Type text/plain evita o "preflight" CORS que o Apps Script não trata bem.
+    await fetch(RSVP_ENDPOINT, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(entry)
+    });
+  }catch(e){ console.error('save error', e); }
+}
+
+function escapeHtml(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+
+function renderConfirmed(list){
+  const listEl = document.getElementById('confirmedList');
+  const totalEl = document.getElementById('totalPeople');
+  const total = list.reduce((sum,r)=>sum + (parseInt(r.people)||0), 0);
+  totalEl.textContent = total;
+  if(list.length === 0){
+    listEl.innerHTML = '<div class="empty-note">Nenhum tripulante confirmado ainda — seja o primeiro!</div>';
+    return;
+  }
+  listEl.innerHTML = list.slice().reverse().map(r=>{
+    const days = (r.days && r.days.length) ? r.days.join(', ') : 'dias a confirmar';
+    return `<div class="crew-chip">
+      <div class="dot" style="background:${r.color || 'var(--crew-cyan)'}"></div>
+      <div>
+        <div class="name">${escapeHtml(r.name)} ${r.people>1 ? '('+r.people+' pessoas)' : ''}</div>
+        <div class="meta">${days}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+loadRSVPs().then(list=>{ currentList = list; renderConfirmed(currentList); });
+
+document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const name = document.getElementById('fName').value.trim();
+  const people = document.getElementById('fPeople').value;
+  const msg = document.getElementById('fMsg').value.trim();
+  if(!name) return;
+
+  const entry = { name, people, msg, days: Array.from(selectedDays), color: selectedColor.c };
+
+  // atualização otimista: mostra na hora, depois confirma com a planilha
+  currentList.push(entry);
+  renderConfirmed(currentList);
+  await saveRSVP(entry);
+  setTimeout(async ()=>{
+    currentList = await loadRSVPs();
+    renderConfirmed(currentList);
+  }, 1200);
+
+  const flash = document.getElementById('confirmFlash');
+  flash.style.display = 'block';
+  setTimeout(()=>{ flash.style.display = 'none'; }, 3500);
+
+  e.target.reset();
+  document.getElementById('fPeople').value = 1;
+  selectedDays.clear();
+  document.querySelectorAll('.day-chip').forEach(c=>c.classList.remove('on'));
+});
+
+// ---------- emergency meeting easter egg ----------
+const emergencyMsgs = [
+  'Alguém comeu um pedaço do bolo antes da hora! 🍰😱',
+  'O Valentim foi visto fazendo tarefa sozinho no reator. Suspeito? 👀',
+  'Confirmado: vai ter piscina, brigadeiro e MUITA correria. 🏊🍬',
+  'Alerta falso. Só queríamos ver todo mundo correndo. 😄',
+  'Tripulante Valentim foi promovido oficialmente a CAPITÃO DA NAVE aos 6 anos! 🎖️'
+];
+const overlay = document.getElementById('alertOverlay');
+const alertMsg = document.getElementById('alertMsg');
+document.getElementById('emergencyBtn').addEventListener('click', ()=>{
+  alertMsg.textContent = emergencyMsgs[Math.floor(Math.random()*emergencyMsgs.length)];
+  overlay.classList.add('show');
+});
+overlay.addEventListener('click', ()=> overlay.classList.remove('show'));
+</script>
+
+</body>
+</html>
