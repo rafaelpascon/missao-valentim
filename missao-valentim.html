@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Missão: 6 Anos do Valentim</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap');
@@ -198,6 +198,12 @@ body{
 
 /* emergency */
 .emergency-btn{position:fixed; bottom:18px; right:18px; z-index:50; width:56px;height:56px;border-radius:50%; background:var(--crew-red); border:3px solid #fff2f2; font-size:24px; cursor:pointer; box-shadow:0 6px 18px rgba(226,58,58,.5);}
+/* No Safari do iOS a barra de ferramentas fica colada na base da tela e cobre
+   qualquer coisa "fixed" ali perto, engolindo o toque sem aviso nenhum — por
+   isso a margem extra generosa em telas pequenas. */
+@media (max-width: 768px){
+  .emergency-btn, .music-btn{ bottom: calc(env(safe-area-inset-bottom, 0px) + 70px) !important; }
+}
 .alert-overlay{position:fixed; inset:0; z-index:100; background:rgba(226,58,58,.94); display:none; align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:30px; cursor:pointer;}
 .alert-overlay.show{display:flex; animation:flash .6s steps(2) 3;}
 .alert-overlay h2{font-family:var(--font-display); font-size:clamp(26px,7vw,40px); margin:0 0 14px;}
