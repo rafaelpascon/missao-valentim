@@ -408,10 +408,7 @@ footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:34px;
 <!-- Música da missão: troque assets/music/theme.mp3 pela trilha que quiser
      (ex: tema do Among Us). Basta colocar o arquivo com esse nome exato
      na pasta assets/music/ que ele passa a tocar automaticamente. -->
-<audio id="bgMusic" loop preload="none">
-  <source src="assets/music/theme.mp3" type="audio/mpeg">
-  <source src="assets/music/theme.wav" type="audio/wav">
-</audio>
+<audio id="bgMusic" loop preload="auto"></audio>
 <button class="music-btn" id="musicBtn" title="Tocar música da missão">🎵</button>
 
 <script>
@@ -904,6 +901,15 @@ document.getElementById('celebrationClose').addEventListener('click', ()=>{
 const bgMusic = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicBtn');
 
+// Define a fonte da música ANTES de qualquer toque (não durante o gesto de clique).
+// O iOS Safari não lida bem com o navegador tentando alternar entre várias
+// <source> (mp3 → wav) no meio de um play() disparado por toque — então
+// resolvemos qual arquivo existe de antemão e fixamos um <audio src> único.
+bgMusic.src = 'assets/music/theme.wav';
+fetch('assets/music/theme.mp3', {method:'HEAD'}).then(res=>{
+  if(res.ok) bgMusic.src = 'assets/music/theme.mp3';
+}).catch(()=>{});
+
 function startMusic(){
   bgMusic.volume = 0.5;
   return bgMusic.play().then(()=>{
@@ -928,7 +934,12 @@ musicBtn.addEventListener('click', (e)=>{
   e.stopPropagation();
   musicBtn.dataset.userControlled = '1';
   if(bgMusic.paused){
-    startMusic().catch(()=>{ console.warn('Não consegui tocar a música — verifique o arquivo em assets/music/.'); });
+    startMusic().catch((err)=>{
+      console.warn('Não consegui tocar a música:', err);
+      // feedback visual mesmo sem console — se o toque falhar, o ícone mostra ⚠️ por 2s
+      musicBtn.textContent = '⚠️';
+      setTimeout(()=>{ if(bgMusic.paused) musicBtn.textContent = '🎵'; }, 2000);
+    });
   } else {
     bgMusic.pause();
     musicBtn.textContent = '🎵';
