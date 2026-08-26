@@ -416,6 +416,11 @@ footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:34px;
 <audio id="bgMusic" loop preload="auto"></audio>
 <button class="music-btn" id="musicBtn" title="Tocar música da missão">🎵</button>
 
+<!-- Som do alerta de emergência: troque assets/sfx/alarm.mp3 (ou alarm.wav) pelo
+     som de sirene que quiser. Basta colocar o arquivo com esse nome exato na pasta
+     assets/sfx/ que ele passa a tocar automaticamente no lugar do placeholder. -->
+<audio id="alarmSound" preload="auto"></audio>
+
 <script>
 // ---------- stars background ----------
 const starsEl = document.getElementById('stars');
@@ -962,9 +967,18 @@ const emergencyMsgs = [
 ];
 const overlay = document.getElementById('alertOverlay');
 const alertMsg = document.getElementById('alertMsg');
+
+const alarmSound = document.getElementById('alarmSound');
+alarmSound.src = 'assets/sfx/alarm.wav';
+fetch('assets/sfx/alarm.mp3', {method:'HEAD'}).then(res=>{
+  if(res.ok) alarmSound.src = 'assets/sfx/alarm.mp3';
+}).catch(()=>{});
+
 document.getElementById('emergencyBtn').addEventListener('click', ()=>{
   alertMsg.textContent = emergencyMsgs[Math.floor(Math.random()*emergencyMsgs.length)];
   overlay.classList.add('show');
+  alarmSound.currentTime = 0;
+  alarmSound.play().catch(()=>{ /* sem interação prévia suficiente pro áudio, ignora */ });
 });
 overlay.addEventListener('click', ()=> overlay.classList.remove('show'));
 </script>
