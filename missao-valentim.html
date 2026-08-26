@@ -836,23 +836,26 @@ function renderConfirmed(list){
 }
 loadRSVPs().then(list=>{ currentList = list; renderConfirmed(currentList); });
 
-document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
+document.getElementById('rsvpForm').addEventListener('submit', (e)=>{
   e.preventDefault();
+  const submitBtn = e.target.querySelector('.submit-btn');
+  if(submitBtn.disabled) return; // já enviando — ignora clique duplicado
   const name = document.getElementById('fName').value.trim();
   const people = document.getElementById('fPeople').value;
   const msg = document.getElementById('fMsg').value.trim();
   if(!name) return;
 
+  // trava o botão na hora, antes de qualquer espera de rede — evita que um
+  // segundo toque (comum quando a resposta demora) mande a confirmação 2x.
+  const originalBtnLabel = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'ENVIANDO...';
+
   const entry = { name, people, msg, days: Array.from(selectedDays), color: selectedColor.c };
 
-  // atualização otimista: mostra na hora, depois confirma com a planilha
+  // feedback é 100% otimista — aparece na hora, sem esperar a planilha responder.
   currentList.push(entry);
   renderConfirmed(currentList);
-  await saveRSVP(entry);
-  setTimeout(async ()=>{
-    currentList = await loadRSVPs();
-    renderConfirmed(currentList);
-  }, 1200);
 
   const flash = document.getElementById('confirmFlash');
   flash.style.display = 'block';
@@ -866,6 +869,18 @@ document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
   document.getElementById('fPeople').value = 1;
   selectedDays.clear();
   document.querySelectorAll('.day-chip').forEach(c=>c.classList.remove('on'));
+
+  // salva na planilha em segundo plano, sem travar a UI
+  saveRSVP(entry)
+    .then(()=> new Promise(res=>setTimeout(res,1200)))
+    .then(async ()=>{
+      currentList = await loadRSVPs();
+      renderConfirmed(currentList);
+    })
+    .finally(()=>{
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnLabel;
+    });
 });
 
 // ---------- celebration screen (tripulantes flutuando após confirmar) ----------
