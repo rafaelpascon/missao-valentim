@@ -164,9 +164,15 @@ body{
 .crew-visual img{width:100%; height:100%; object-fit:cover; display:block;}
 
 /* crew select */
-.crew-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:10px;}
-.crew-option{background:transparent; border:2px solid transparent; border-radius:12px; padding:8px 4px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;}
-.crew-option span{font-size:11px; color:var(--muted); font-weight:700;}
+.crew-grid{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px;}
+.crew-option{background:transparent; border:2px solid transparent; border-radius:12px; padding:8px 4px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; min-width:0;}
+.crew-option span{font-size:11px; color:var(--muted); font-weight:700; overflow-wrap:anywhere;}
+/* Em telas estreitas (iPhone 13 Pro, 16 Pro etc.) 6 colunas com nomes como
+   "Vermelho"/"Laranja" não cabem — a coluna extra empurrava o Laranja pra
+   fora do card e ele sumia. Reorganiza em 3 colunas x 2 linhas nesses casos. */
+@media (max-width: 420px){
+  .crew-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
 .crew-option.selected{border-color:var(--crew-cyan); background:rgba(63,224,208,.08);}
 .crew-option.selected span{color:var(--crew-cyan);}
 
